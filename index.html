@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Twitter Near-Real Time Search Demo</title>
+  <link rel="stylesheet" type="text/css" href="bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="style.css" />
+  <script src="jquery-1.11.3.min.js"></script>
+  <script src="bootstrap.min.js"></script>
+  <script>
+    twttr = (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0],
+          t = window.twttr || {};
+      if (d.getElementById(id)) return t;
+      js = d.createElement(s);
+      js.id = id;
+      js.src = "https://platform.twitter.com/widgets.js";
+      fjs.parentNode.insertBefore(js, fjs);
+      t._e = [];
+      t.ready = function(f) {
+         t._e.push(f);
+      };
+     return t;
+    }(document, "script", "twitter-wjs"));
+  </script>
+  <script>
+      function submitPreference(){
+        var topic = document.getElementById("topic").value;
+        var runtag1 = document.getElementById("runtag1").value;
+        var runtag2 = document.getElementById("runtag2").value;
+        var data = {}
+        topic=topic.split(' ');
+        topic=topic[0];
+        data.topic = topic;
+        data.runtag1 = runtag1;
+        data.runtag2 = runtag2;
+        // console.log(data);
+
+        if($("input[type='radio'].radioBtnClass").is(':checked')) {
+          var preference = $("input[type='radio'].radioBtnClass:checked").val();
+          data.preference=preference;
+          // alert(data);
+        }
+        // console.log(data);
+        $.ajax({
+      type: 'POST',
+      url: 'http://www.sunny-song.com/abtest/search3.php',
+      crossDomain: true,
+      data: JSON.stringify(data),
+      dataType: 'json',
+      success: function(responseData, textStatus, jqXHR) {
+        alert("Thanks!");
+        var value = responseData.someKey;
+      },
+      error: function (responseData, textStatus, errorThrown) {
+          alert('POST failed.');
+      }
+      });
+
+
+
+      }
+
+  </script>
+  <script>
+  function openTopic(){
+    var topic = document.getElementById("topic").value;
+    // topic=topic.split(' ');
+    // topic=topic[0];
+    var left = (screen.width/3);
+    var top = (screen.height/3);
+    return window.open('topics/'+topic+'.html', 'name', 'width=450,height=450,top='+top+', left='+left); 
+    popupWindow = window.open('index_1125.html','name','width=300,height=300');
+    alert(topic);
+  }
+  function submitQuery(){
+    $('#left').empty();
+    $('#middle').empty();
+    $('#right').empty();
+
+    var A=document.createElement("div");
+    A.setAttribute("id", "resultsA");
+    document.getElementById("left").appendChild(A);
+
+    var B=document.createElement("div");
+    B.setAttribute("id", "resultsB");
+    document.getElementById("middle").appendChild(B);
+
+    var C=document.createElement("div");
+    C.setAttribute("id", "resultsC");
+    document.getElementById("right").appendChild(C);
+
+    var topic = document.getElementById("topic").value;
+
+    $("#this_is_h1").text(topic);
+    topic=topic.split(' ');
+    topic=topic[0];
+    var runtag1 = document.getElementById("runtag1").value;
+    var runtag2 = document.getElementById("runtag2").value;
+    var data = {}
+    data.topic = topic;
+    data.runtag1 = runtag1;
+    data.runtag2 = runtag2;
+    console.log(data);
+    $.ajax({
+    type: 'POST',
+    url: 'http://www.sunny-song.com/abtest/search3.php',
+    crossDomain: true,
+    data: JSON.stringify(data),
+    dataType: 'json',
+    success: function(responseData, textStatus, jqXHR) {
+        var value = responseData.someKey;
+    },
+    error: function (responseData, textStatus, errorThrown) {
+        alert('POST failed.');
+    }
+    }).done(function(data){
+      // alert(data[0].system+data[1].system+data[2].epoch)
+      $.each(data,function(i,item){
+        
+        if (item.system=="A") {
+          twttr.widgets.createTweet(item.docid,document.getElementById("resultsA"),{theme: 'light'});
+          twttr.widgets.createTweet(item.docid,document.getElementById("resultsC"),{theme: 'light'});
+        }
+        else if (item.system=="B")  {
+          twttr.widgets.createTweet(item.docid,document.getElementById("resultsB"),{theme: 'dark'});
+          twttr.widgets.createTweet(item.docid,document.getElementById("resultsC"),{theme: 'dark'});
+        }
+
+      }
+      );
+    });
+  }
+
+  </script>
+</head>
+<body style="height:100%">
+<div class="container" style="height:100%">
+
+  <div class="page-header" style="height:8%">
+    <h4 id="this_is_h1"> </h4>
+      <!-- <input type="text" id="topic_display"></input> -->
+    <form class="form-inline col-sm-8" action="JavaScript:submitQuery()">
+    
+      <div class="form-group">
+        <label for="sel1">System A</label>
+        <select class="form-control selectpicker show-tick" name='runtag1' id="runtag1" >
+          <option value="1unique2">1unique2</option>
+          <option value="3unique0">3unique0</option>
+          <option value="3unique2">3unique2</option>
+          <option value="EM100">EM100</option>
+          <option value="EM50">EM50</option>
+          <option value="hltcoeTTG0">hltcoeTTG0</option>
+          <option value="hltcoeTTG1">hltcoeTTG1</option>
+          <option value="hltcoeTTG2">hltcoeTTG2</option>
+          <option value="hltcoeTTG3">hltcoeTTG3</option>
+          <option value="ICTNETAP3">ICTNETAP3</option>
+          <option value="ICTNETAP4">ICTNETAP4</option>
+          <option value="ICTNETRunSP3">ICTNETRunSP3</option>
+          <option value="ICTNETRUNSP4">ICTNETRUNSP4</option>
+          <option value="JufeLdkeSum1">JufeLdkeSum1</option>
+          <option value="JufeLdkeSum2">JufeLdkeSum2</option>
+          <option value="JufeLdkeSum3">JufeLdkeSum3</option>
+          <option value="PrisTTG2014a">PrisTTG2014a</option>
+          <option value="PrisTTG2014b">PrisTTG2014b</option>
+          <option value="PrisTTG2014c">PrisTTG2014c</option>
+          <option value="PrisTTG2014e">PrisTTG2014e</option>
+          <option value="QUQEd10t15TTgCL">QUQEd10t15TTgCL</option>
+          <option value="QUQEd5t25TTgBL">QUQEd5t25TTgBL</option>
+          <option value="QUTmpDecayTTgCL">QUTmpDecayTTgCL</option>
+          <option value="QUTqrmTTgBL">QUTqrmTTgBL</option>
+          <option value="SCIAI124aTTG">SCIAI124aTTG</option>
+          <option value="SCIAI14aTTG">SCIAI14aTTG</option>
+          <option value="SCIAI3am14aTTG">SCIAI3am14aTTG</option>
+          <option value="SCIAI3cm4aTTG">SCIAI3cm4aTTG</option>
+          <option value="SM100">SM100</option>
+          <option value="SM50">SM50</option>
+          <option value="SR">SR</option>
+          <option value="SRTD">SRTD</option>
+          <option value="SRTL">SRTL</option>
+          <option value="Standard">Standard</option>
+          <option value="TTGPKUICST1">TTGPKUICST1</option>
+          <option value="TTGPKUICST2">TTGPKUICST2</option>
+          <option value="TTGPKUICST3">TTGPKUICST3</option>
+          <option value="TTGPKUICST4">TTGPKUICST4</option>
+          <option value="udelRunTTG1">udelRunTTG1</option>
+          <option value="udelRunTTG2">udelRunTTG2</option>
+          <option value="udelRunTTG3">udelRunTTG3</option>
+          <option value="udelRunTTG4">udelRunTTG4</option>
+          <option value="UDInfoMMR5">UDInfoMMR5</option>
+          <option value="UDInfoMMRA">UDInfoMMRA</option>
+          <option value="UDInfoMMRWC5">UDInfoMMRWC5</option>
+          <option value="UDInfoMMRWCA">UDInfoMMRWCA</option>
+          <option value="wistudt2bcd">wistudt2bcd</option>
+          <option value="wistudt2bd">wistudt2bd</option>
+          <option value="wistudt2qcd">wistudt2qcd</option>
+          <option value="wistudt2qd">wistudt2qd</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Topic</label>
+        <select class="form-control selectpicker show-tick" name='topic' id="topic" >
+            <option value="MB171 Ron Weasley birthday">MB171</option>
+            <option value="MB172 Merging of US Air and American">MB172</option>
+            <option value="MB173 muscle pain from statins">MB173</option>
+            <option value="MB174 Hubble oldest star">MB174</option>
+            <option value="MB175 commentary on naming storm Nemo">MB175</option>
+            <option value="MB176 book club members">MB176</option>
+            <option value="MB177 Boko Haram kidnapped French tourists">MB177</option>
+            <option value="MB178 Tiger Woods regains title">MB178</option>
+            <option value="MB179 care of Iditarod dogs">MB179</option>
+            <option value="MB180 Sherlock Elementary BBC CBS">MB180</option>
+            <option value="MB181 Costa Concordia shipwreck">MB181</option>
+            <option value="MB182 Chinua Achebe death">MB182</option>
+            <option value="MB183 Evernote hacked">MB183</option>
+            <option value="MB184 Election of Hugo Chavez successor">MB184</option>
+            <option value="MB185 National Zoo Panda, insemination">MB185</option>
+            <option value="MB186 Dorner, truck, compensation">MB186</option>
+            <option value="MB187 Pope washed Muslims feet">MB187</option>
+            <option value="MB188 Bombing police headquarters, Kirkuk">MB188</option>
+            <option value="MB189 injuries by pets">MB189</option>
+            <option value="MB190 Organized crime, sports doping, Australia">MB190</option>
+            <option value="MB191 Irish laundries apology">MB191</option>
+            <option value="MB192 whooping cough epidemic">MB192</option>
+            <option value="MB193 Bulgarian protesters self immolate">MB193</option>
+            <option value="MB194 cherry blossom Washington">MB194</option>
+            <option value="MB195 Argo wins Oscar">MB195</option>
+            <option value="MB196 US fines Google over Street View">MB196</option>
+            <option value="MB197 Mad Men season 6">MB197</option>
+            <option value="MB198 Hostess bought by Apollo">MB198</option>
+            <option value="MB199 Ed Koch death">MB199</option>
+            <option value="MB200 UK passes marriage bill">MB200</option>
+            <option value="MB201 Higgs Boson discovery">MB201</option>
+            <option value="MB202 Boko Haram, Amnesty opposition">MB202</option>
+            <option value="MB203 Eastern Australia Floods">MB203</option>
+            <option value="MB204 Sotomayor, prosecutor, racial comments">MB204</option>
+            <option value="MB205 Port Said football riot, death sentences">MB205</option>
+            <option value="MB206 yarn bombing">MB206</option>
+            <option value="MB207 David Cameron, apology, Amritsar">MB207</option>
+            <option value="MB208 Olympics drops wrestling">MB208</option>
+            <option value="MB209 Chelyabinsk meteor damage">MB209</option>
+            <option value="MB210 arrest of Craig Wilson for drive-by shooting in D.C.">MB210</option>
+            <option value="MB211 Downton Abbey, Lady Mary, beau">MB211</option>
+            <option value="MB212 Kate Middleton maternity wear">MB212</option>
+            <option value="MB213 US Embassy in Ankara bombed">MB213</option>
+            <option value="MB214 Common Core, math">MB214</option>
+            <option value="MB215 snow blower problems">MB215</option>
+            <option value="MB216 Type II diabetes research">MB216</option>
+            <option value="MB217 Pope candidates">MB217</option>
+            <option value="MB218 Sinkhole rescues">MB218</option>
+            <option value="MB219 Russian meteorite conspiracy">MB219</option>
+            <option value="MB220 Shahbag protest">MB220</option>
+            <option value="MB221 HIV baby cured">MB221</option>
+            <option value="MB222 'Oz, The Great and Powerful' opens">MB222</option>
+            <option value="MB223 dog off leashed">MB223</option>
+            <option value="MB224 dark pool trading">MB224</option>
+            <option value="MB225 Barbara Walters, chicken pox">MB225</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Run B</label>
+        <select class="form-control selectpicker show-tick" name='runtag2' id="runtag2" >
+            <option value="1unique2">1unique2</option>
+            <option value="3unique0">3unique0</option>
+            <option value="3unique2">3unique2</option>
+            <option value="EM100">EM100</option>
+            <option value="EM50">EM50</option>
+            <option value="hltcoeTTG0">hltcoeTTG0</option>
+            <option value="hltcoeTTG1">hltcoeTTG1</option>
+            <option value="hltcoeTTG2">hltcoeTTG2</option>
+            <option value="hltcoeTTG3">hltcoeTTG3</option>
+            <option value="ICTNETAP3">ICTNETAP3</option>
+            <option value="ICTNETAP4">ICTNETAP4</option>
+            <option value="ICTNETRunSP3">ICTNETRunSP3</option>
+            <option value="ICTNETRUNSP4">ICTNETRUNSP4</option>
+            <option value="JufeLdkeSum1">JufeLdkeSum1</option>
+            <option value="JufeLdkeSum2">JufeLdkeSum2</option>
+            <option value="JufeLdkeSum3">JufeLdkeSum3</option>
+            <option value="PrisTTG2014a">PrisTTG2014a</option>
+            <option value="PrisTTG2014b">PrisTTG2014b</option>
+            <option value="PrisTTG2014c">PrisTTG2014c</option>
+            <option value="PrisTTG2014e">PrisTTG2014e</option>
+            <option value="QUQEd10t15TTgCL">QUQEd10t15TTgCL</option>
+            <option value="QUQEd5t25TTgBL">QUQEd5t25TTgBL</option>
+            <option value="QUTmpDecayTTgCL">QUTmpDecayTTgCL</option>
+            <option value="QUTqrmTTgBL">QUTqrmTTgBL</option>
+            <option value="SCIAI124aTTG">SCIAI124aTTG</option>
+            <option value="SCIAI14aTTG">SCIAI14aTTG</option>
+            <option value="SCIAI3am14aTTG">SCIAI3am14aTTG</option>
+            <option value="SCIAI3cm4aTTG">SCIAI3cm4aTTG</option>
+            <option value="SM100">SM100</option>
+            <option value="SM50">SM50</option>
+            <option value="SR">SR</option>
+            <option value="SRTD">SRTD</option>
+            <option value="SRTL">SRTL</option>
+            <option value="Standard">Standard</option>
+            <option value="TTGPKUICST1">TTGPKUICST1</option>
+            <option value="TTGPKUICST2">TTGPKUICST2</option>
+            <option value="TTGPKUICST3">TTGPKUICST3</option>
+            <option value="TTGPKUICST4">TTGPKUICST4</option>
+            <option value="udelRunTTG1">udelRunTTG1</option>
+            <option value="udelRunTTG2">udelRunTTG2</option>
+            <option value="udelRunTTG3">udelRunTTG3</option>
+            <option value="udelRunTTG4">udelRunTTG4</option>
+            <option value="UDInfoMMR5">UDInfoMMR5</option>
+            <option value="UDInfoMMRA">UDInfoMMRA</option>
+            <option value="UDInfoMMRWC5">UDInfoMMRWC5</option>
+            <option value="UDInfoMMRWCA">UDInfoMMRWCA</option>
+            <option value="wistudt2bcd">wistudt2bcd</option>
+            <option value="wistudt2bd">wistudt2bd</option>
+            <option value="wistudt2qcd">wistudt2qcd</option>
+            <option value="wistudt2qd">wistudt2qd</option>
+        </select>
+      </div>      
+      <input type="submit" class="btn btn-success" value="Run" />
+      <!-- <a class="btn btn-info" type="button" href ="javascript:openTopic()" target="popup">Topic Spec</a> -->
+    </form>
+
+    <form class="form-inline col-sm-4" action="JavaScript:submitPreference()">
+      Better one?&nbsp;
+      <label class="radio-inline">
+        <input type="radio" class="radioBtnClass" name="optradio" value="A">A
+      </label>
+      <label class="radio-inline">
+        <input type="radio" class="radioBtnClass" name="optradio" value="neither">Neither
+      </label>
+      <label class="radio-inline">
+        <input type="radio" class="radioBtnClass" name="optradio" value="B">B
+      </label>
+      &nbsp;
+      
+      <input type="submit" class="btn btn-primary" value="Submit" />
+    </form>
+
+  </div>
+  <div class="col-sm-4" id="left" style="overflow-y:scroll;width:33%;height:100%">
+  </div>   
+
+  <div class="col-sm-4" id="middle" style="overflow-y:scroll;width:33%;height:100%">
+  </div>
+
+  <div class="col-sm-4" id="right" style="overflow-y:scroll;width:34%;height:100%">
+  </div>
+
+
+
+
+    
+</div> <!-- /container -->
+</body>
+</html>
